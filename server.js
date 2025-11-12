@@ -1,12 +1,12 @@
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose(); //Nyomkövetési és hibakeresés támogatása (verbose())
-const app = express();
 const cors =  require('cors');
+const app = express();
 const PORT = 3000;
 
-//Middleware
+//Middleware - köztes alkalmazások
 app.use(express.json());
-app.use(cors());
+app.use(cors()); //Cross Origin Resource Sharing
 
 //Az adatbázis (fájl) inicializálása
 const db = new sqlite3.Database('test.db', (err) => {
