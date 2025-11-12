@@ -1,4 +1,5 @@
 //REST Frontend - HTML kliens, az API elérésére és az adatbázis műveletekre
+//const { application } = require("express");
 
 const apiUrl = 'http://localhost:3000/api/users'  //Az API elérési utvonala
 const usersData = document.getElementById('usersData') //AZ outpot tábla törzse
@@ -22,7 +23,9 @@ async function getUsers() {
             <td>${user.phone}</td>
             <td>${user.email}</td>
             <td>${user.gender}</td>
-            <td>${user.actions}</td>
+            <td>
+            <button>Törlés</button>
+            </td>
             </tr>
             `).join('');
     }
@@ -32,5 +35,42 @@ async function getUsers() {
 
     }
 }
+//Adatok küldése az API-nak
+//Az űrlap adatok összegyűjtése
+document.getElementById('userForm').addEventListener('submit', async(e) => {
+    e.preventDefault();//Az alapértelmezett űrlap viselkedés letiltása
+
+    try {
+        const formData = new formData(e.target); //Az űrlap adatainak az elérése
+        const data = Object.fromEntries(formData); //A data objektum tárolja az input mezőket
+        
+        //Az input elemek kitöltöségének az ellenőrzése
+        if (!data.firstName || !data.lastName || !data.city || !data.address || !data.phone || !data.email || !data.gender){
+            alert('Hiányzó adatok, kérem, hogy minden mezőt töltsön ki! ')
+        }
+        else{
+            const response = await fetch(apiUrl, {
+                method: "Post",
+                headers: { 'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+            //Várunk a szerver(API) válaszára
+            const result = await response.json()
+
+            //AZ API válaszától  függően 
+            if(response.ok) {
+                alert(result.message)
+                getUsers(); //A táblázat frissitése
+            } else {
+                alert(result.message);
+            }
+            e.target.reset();
+        }
+    
+    }
+    catch(error){
+            alert(error.message);
+    }
+})
 
 getUsers(); //Az adatok lekérése szolgáló függvény meghívása
